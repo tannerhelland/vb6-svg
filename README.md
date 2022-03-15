@@ -1,20 +1,22 @@
-## VB6-SVG provides full SVG and SVGZ support for classic VB6 projects
+## VB6-SVG provides full SVG (and SVGZ) support for VB6 projects
 
-It does this thanks to resvg, a comprehensive portable SVG library by Yevhenii Reizner:
+This is possible thanks to resvg, a comprehensive portable SVG library by Yevhenii Reizner:
 
 https://github.com/RazrFalcon/resvg
 
-resvg is available under an MPL-2 license.  Please see resvg-LICENSE.md for full details.
+resvg is available under an MPL-2 license.  Please see [resvg-LICENSE.md](https://github.com/tannerhelland/vb6-svg/blob/main/resvg-LICENSE.md) for full details.
 
 ### System requirements
 
 This project is 100% portable.  You simply need to ship `resvg.dll` alongside your application (perhaps in an app subfolder).
 
-This project has been tested on Win 7, 10, and 11.  It theoretically supports Windows Vista but this has not been manually verified.
+This project has been tested on Win 7, 10, and 11.  It theoretically supports Windows Vista, but testing this is TBD.
 
-This project will not work on Windows XP.  This is due to limitations building resvg with XP support.
+This project will not work on Windows XP.
 
 ### How to use VB6-SVG
+
+An interactive demonstration of VB6-SVG is included in this repository.  It is extensively commented, but if you would like a brief overview of how to use this code in your own VB6 project, keep reading.
 
 VB6-SVG has three mandatory components.  All three must be added to your VB6 project:
 
@@ -29,7 +31,7 @@ VB6-SVG has three mandatory components.  All three must be added to your VB6 pro
 Adding SVG support to your own VB6 projects is simple:
 
 1. Ensure you have read and understood both `LICENSE.md` (for the VB6 code) and `resvg-LICENSE.md` (for resvg).
-2. Ship `resvg.dll` with your app.  This is a traditional DLL, not an ActiveX one, so you do not need to register it.  Just make sure it is available in a predictable location.
+2. Ship `resvg.dll` with your app.  This is a traditional DLL, not an ActiveX dll, so you do not need to register it.  Just make sure it is available in a predictable location.
 3. Somewhere in your VB6 project initialization, add one line of code:
 
 `svgSupport.StartSVGSupport "C:\[path-to-resvg-folder]\resvg.dll"`
@@ -52,14 +54,14 @@ This will free all shared GDI and SVG resources used by the project, then manual
 
 As you can imagine, if you are using module- or global- (*ugh*) `svgImage` class instances, they need to be freed **before** calling `StopSVGSupport`, because once resvg is released, SVG management is over.
 
-7. (Optional) this project must do some manual image processing to allow painting SVGs to arbitrary Windows DCs.  Performance will be improve significantly if you compile your project to native code with the `Remove Array Bounds Checks` optimization enabled.  Please do this.
+7. *(Optional)* some manual processing is required to allow painting SVGs to arbitrary Windows DCs.  Performance is significantly improved when compiled to native code with the `Remove Array Bounds Checks` optimization enabled.  Please do this.
 
 8. That's it!  If you encounter any bugs or unexpected behavior, please [file an issue at GitHub](https://github.com/tannerhelland/vb6-svg/issues).
 
 ### Licensing
 
-The VB6 portion of this project is available under a Simplified BSD license.  Full details are provided in LICENSE.md.
+The VB6 portion of this project is available under a Simplified BSD license.  Full details are provided in [LICENSE.md](https://github.com/tannerhelland/vb6-svg/blob/main/LICENSE.md).
 
-resvg is available under an MPL-2 license.  Full details are provided in resvg-LICENSE.md.
+resvg is available under an MPL-2 license.  Full details are provided in [resvg-LICENSE.md](https://github.com/tannerhelland/vb6-svg/blob/main/resvg-LICENSE.md).
 
 Many thanks to [Yevhenii Reizner](https://github.com/RazrFalcon) for his work on resvg.
