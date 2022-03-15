@@ -1,0 +1,15 @@
+# Default behavior: auto detect text files and perform LF normalization
+* text=auto
+
+# VB6 quirks
+*.ctx    -diff
+*.frx    -diff
+*.res    -diff
+*.bas    eol=crlf
+*.cls    eol=crlf
+*.ctl    eol=crlf
+*.frm    eol=crlf
+*.vbp    eol=crlf
+
+# VB6 users may be using old text editors
+*.md     eol=crlf

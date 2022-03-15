@@ -1,0 +1,17 @@
+############
+## Windows
+############
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+#############
+## VB6
+#############
+
+*.tmp
+*.vbw
+*.exe
