@@ -6,6 +6,8 @@ https://github.com/RazrFalcon/resvg
 
 resvg is available under an MPL-2 license.  Please see [resvg-LICENSE.md](https://github.com/tannerhelland/vb6-svg/blob/main/resvg-LICENSE.md) for full details.
 
+![image](https://user-images.githubusercontent.com/1930029/158446300-b6d995ba-bc65-4d6b-b0bc-bf8e93816f20.png)
+
 ### System requirements
 
 This project is 100% portable.  You simply need to ship `resvg.dll` alongside your application (perhaps in an app subfolder).
