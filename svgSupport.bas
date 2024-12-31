@@ -3,8 +3,8 @@ Attribute VB_Name = "svgSupport"
 'resvg Library Interface (SVG import) for VB6
 'VB6 portion Copyright 2022 by Tanner Helland; see LICENSE.md and resvg-LICENSE.md for additional details
 'Created: 28/February/22
-'Last updated: 15/March/22
-'Last update: wrap up initial build
+'Last updated: 30/December/24
+'Last update: update code against latest 0.44.0 resvg release
 '
 'This project demonstrates full SVG support in VB6 c/o the third-party resvg library.  It is designed
 ' to be leak-free and very simple to use.
@@ -25,7 +25,7 @@ Attribute VB_Name = "svgSupport"
 '
 'ABOUT resvg:
 '
-'Per its documentation (available at https://github.com/RazrFalcon/resvg), resvg is...
+'Per its documentation (available at https://github.com/linebender/resvg), resvg is...
 '
 '"...an SVG rendering library. It can be used as a Rust library, as a C library and as a CLI application
 ' to render static SVG files. The core idea is to make a fast, small, portable SVG library with an aim to
@@ -38,7 +38,7 @@ Attribute VB_Name = "svgSupport"
 '
 'BUILDING resvg:
 '
-'The copy of resvg.dll that ships with this project is based on the 0.22.0 release and built against
+'The copy of resvg.dll that ships with this project is based on the 0.44.0 release and built against
 ' the i686-pc-windows-msvc rust target (for Win Vista+ support).  It *must* be hand-edited to export
 ' stdcall funcs. (You might be tempted to just use cdecl via DispCallFunc, but some resvg functions
 ' return custom types that won't work with DispCallFunc - so manually building against stdcall is
@@ -47,7 +47,7 @@ Attribute VB_Name = "svgSupport"
 ' building the library yourself without carefully reviewing the matching VB6 declarations provided below.
 '
 'Finally, you can read all about resvg default settings and how to customize them from the C-api header
-' available at GitHub: https://github.com/RazrFalcon/resvg/blob/master/c-api/resvg.h
+' available at GitHub: https://github.com/linebender/resvg/blob/main/crates/c-api/resvg.h
 '
 'Please submit bug reports, feedback, etc. at GitHub:
 ' https://github.com/tannerhelland/vb6-svg
@@ -55,7 +55,7 @@ Attribute VB_Name = "svgSupport"
 'Unless otherwise noted, all VB6 source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file in the root project directory.
 '
-'resvg is Copyright 2022 by Yevhenii Reizner.  It is used here under its original MPL-2 license.
+'resvg is Copyright 2024 by the Resvg authors.  It is used here under its original MPL-2 license.
 ' Full license details are available in the resvg-LICENSE.md file in the root project directory.
 '
 '***************************************************************************
@@ -94,23 +94,6 @@ End Enum
     Private Const RESVG_OK = 0, RESVG_ERROR_NOT_AN_UTF8_STR = 1, RESVG_ERROR_FILE_OPEN_FAILED = 2, RESVG_ERROR_MALFORMED_GZIP = 3, RESVG_ERROR_ELEMENTS_LIMIT_REACHED = 4, RESVG_ERROR_INVALID_SIZE = 5, RESVG_ERROR_PARSING_FAILED = 6
 #End If
 
-'A "fit to" type.
-' (All types produce proportional scaling.)
-Private Enum resvg_fit_to_type
-    'Use an original image size.
-    RESVG_FIT_TO_TYPE_ORIGINAL
-    'Fit an image to a specified width.
-    RESVG_FIT_TO_TYPE_WIDTH
-    'Fit an image to a specified height.
-    RESVG_FIT_TO_TYPE_HEIGHT
-    'Zoom an image using scaling factor.
-    RESVG_FIT_TO_TYPE_ZOOM
-End Enum
-
-#If False Then
-    Private Const RESVG_FIT_TO_TYPE_ORIGINAL = 0, RESVG_FIT_TO_TYPE_WIDTH = 0, RESVG_FIT_TO_TYPE_HEIGHT = 0, RESVG_FIT_TO_TYPE_ZOOM = 0
-#End If
-
 'An image rendering method.
 Private Enum resvg_image_rendering
     RESVG_IMAGE_RENDERING_OPTIMIZE_QUALITY
@@ -145,48 +128,37 @@ End Enum
 
 'A 2D transform representation.
 Private Type resvg_transform
-    a As Double
-    b As Double
-    c As Double
-    d As Double
-    e As Double
-    f As Double
+    a As Single
+    b As Single
+    c As Single
+    d As Single
+    e As Single
+    f As Single
 End Type
 
 'A size representation.
 ' (Width and height are guaranteed to be > 0.)
 Private Type resvg_size
-    svg_width As Double
-    svg_height As Double
+    svg_width As Single
+    svg_height As Single
 End Type
 
 'A rectangle representation.
 ' (Width *and* height are guarantee to be > 0.)
 Private Type resvg_rect
-    x As Double
-    y As Double
-    Width As Double
-    Height As Double
+    x As Single
+    y As Single
+    Width As Single
+    Height As Single
 End Type
 
 'A path bbox representation.
 ' (Width *or* height are guarantee to be > 0.)
 Private Type resvg_path_bbox
-    x As Double
-    y As Double
-    Width As Double
-    Height As Double
-End Type
-
-'A "fit to" property.
-Private Type resvg_fit_to
-    'A fit type.
-    fit_type As resvg_fit_to_type
-    'Fit to value
-    '* Not used by RESVG_FIT_TO_ORIGINAL.
-    '* Must be >= 1 for RESVG_FIT_TO_WIDTH and RESVG_FIT_TO_HEIGHT.
-    '* Must be > 0 for RESVG_FIT_TO_ZOOM.
-    fit_value As Single
+    x As Single
+    y As Single
+    Width As Single
+    Height As Single
 End Type
 
 Private Declare Function resvg_transform_identity Lib "resvg" () As resvg_transform
@@ -220,8 +192,8 @@ Private Declare Function resvg_node_exists Lib "resvg" (ByVal resvg_render_tree 
 Private Declare Function resvg_get_node_transform Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef dst_resvg_transform As resvg_transform) As Long
 Private Declare Function resvg_get_node_bbox Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef dst_resvg_path_bbox As resvg_path_bbox) As Long
 Private Declare Sub resvg_tree_destroy Lib "resvg" (ByVal resvg_render_tree As Long)
-Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef fit_to As resvg_fit_to, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
-Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByVal fit_to As resvg_fit_to, ByVal srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
+Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
+Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 
 'Generic WAPI support functions
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
@@ -536,11 +508,6 @@ Public Function INTERNAL_DrawTreeToDC(ByVal dstDC As Long, ByRef srcImage As svg
         'We can now perform the SVG render.  Note that we are obviously rendering to the temporary GDI object,
         ' *NOT* the destination DC.  (That will happen later.)
         
-        'Specify fitting behavior (we always use original fit - you'll see why in a moment)
-        Dim fitBehavior As resvg_fit_to
-        fitBehavior.fit_type = RESVG_FIT_TO_TYPE_ORIGINAL
-        fitBehavior.fit_value = 1!
-        
         'If custom destination width/height is specified, we want to use the final transform matrix
         ' to apply the resize.
         Dim idMatrix As resvg_transform
@@ -560,7 +527,7 @@ Public Function INTERNAL_DrawTreeToDC(ByVal dstDC As Long, ByRef srcImage As svg
         End If
         
         'Render!
-        resvg_render srcImage.INTERNAL_GetSVGHandle(), fitBehavior, idMatrix, dstWidth, dstHeight, m_tmpDIBBits
+        resvg_render srcImage.INTERNAL_GetSVGHandle(), idMatrix, dstWidth, dstHeight, m_tmpDIBBits
             
         'Before exiting, we need to swizzle red and blue channels.  The fastest way to do this
         ' (in VB6) is to "wrap" an array around the bits we just painted.  We can do this by

@@ -45,7 +45,7 @@ Attribute VB_Exposed = False
 'Unless otherwise noted, all VB6 source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file in the root project directory.
 '
-'resvg is Copyright 2022 by Yevhenii Reizner.  It is used here under its original MPL-2 license.
+'resvg is Copyright 2024 by the resvg authors.  It is used here under its original MPL-2 license.
 ' Full license details are available in the resvg-LICENSE.md file in the root project directory.
 '***************************************************************************
 

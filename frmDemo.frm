@@ -204,7 +204,7 @@ Begin VB.Form frmDemo
    End
    Begin VB.Label lblTitle 
       BackStyle       =   0  'Transparent
-      Caption         =   "click on the picture box to draw the selected SVG at that mouse position (using the zoom and opacity settings on the left):"
+      Caption         =   "click the picture box to draw the selected SVG at that mouse position (using the zoom and opacity settings on the left):"
       Height          =   375
       Index           =   1
       Left            =   3600

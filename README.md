@@ -2,7 +2,7 @@
 
 This is possible thanks to resvg, a comprehensive portable SVG library by Yevhenii Reizner:
 
-https://github.com/RazrFalcon/resvg
+https://github.com/linebender/resvg
 
 resvg is available under an MPL-2 license.  Please see [resvg-LICENSE.md](https://github.com/tannerhelland/vb6-svg/blob/main/resvg-LICENSE.md) for full details.
 
@@ -10,7 +10,7 @@ resvg is available under an MPL-2 license.  Please see [resvg-LICENSE.md](https:
 
 ### System requirements
 
-This project is 100% portable.  You simply need to ship `resvg.dll` alongside your application (perhaps in an app subfolder).
+This project is 100% portable.  You simply need to ship `resvg.dll` alongside your application (perhaps in an `/App` subfolder).
 
 This project has been tested on Win 7, 10, and 11.  It theoretically supports Windows Vista, but testing this is TBD.
 
@@ -42,7 +42,7 @@ That line of code will initialize resvg and prepare a bunch of SVG-related resou
 
 4. Create (unlimited) `svgImage` instances by calling:
 
-`svgSupport.LoadSVG_FromFile()`
+`svgSupport.LoadSVG_FromFile([path-to-svg] As String, [dstSvgImage] As svgImage)`
 
 Each `svgImage` instance manages a single SVG image.  `svgImage` stores a parsed SVG "tree", allowing you to render the SVG over-and-over at whatever position(s), size(s), and opacities you desire.  You can query individual instances for their default width/height, or draw them at whatever width/height you want using the `DrawSVGtoDC()` function.  As you'd expect for vector images, resizing and painting is always non-destructive.
 
